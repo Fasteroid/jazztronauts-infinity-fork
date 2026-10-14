@@ -13,8 +13,8 @@ surface.CreateFont( "JazzRespawnHint", {
 })
 
 local Radius = ScreenScale(25)
-local XOff = ScreenScale(220)
-local YOff = ScreenScale(100)
+local XOff = ScreenScale(270)
+local YOff = ScreenScale(90)
 
 local nameLookups = {}
 local function getPlayerName(id64)

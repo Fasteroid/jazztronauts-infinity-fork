@@ -98,7 +98,7 @@ local function DrawMission(mission, x, y)
 	bumpdt = bumpdt * bumpdt
 	height = height + bumpdt * 10
 
-	y = y - height
+	y = y + height
 
 	local rect = Rect(x,y,width,height)
 
@@ -119,7 +119,7 @@ local function DrawMission(mission, x, y)
 	draw.SimpleText(minfo.Instructions, font, tr.x, tr.y, Color(255 - bumpdt*255,255,255 - bumpdt*255))
 
 	if not mission.completed then
-		drawProgressBar(m, x + 5, y + height - 25, width-10, 20, missions.Active[mid], minfo.Count, animclip)
+		drawProgressBar(m, x + 5, y + height - 30, width-10, 25, missions.Active[mid], minfo.Count, animclip)
 	elseif mission.completed then
 		draw.SimpleText(jazzloc.Localize("jazz.mission.finished"), font, x + 5, y + 5 + 20, Color(255, 255, 0))
 	else
@@ -128,7 +128,7 @@ local function DrawMission(mission, x, y)
 
 	animclip:SetClip(false)
 
-	return y - metrics.spacing
+	return y + metrics.spacing
 end
 
 local ShowFinishedMissions = false
@@ -136,8 +136,8 @@ hook.Add("HUDPaint", "JazzDrawMissions", function()
 	if jazzHideHUD then return end
 	
 	local spacing = ScreenScale(2)
-	local offset = ScreenScale(40)
-	local y = ScrH() - offset
+	local offset = ScreenScale(-7)
+	local y = offset
 	for k, v in pairs(missions.ClientMissionHistory) do
 		if ( ShowFinishedMissions and v.completed ) or not v.completed then
 			y = DrawMission(v, ScreenScale(12), y)
