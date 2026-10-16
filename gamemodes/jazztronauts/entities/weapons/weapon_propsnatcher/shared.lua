@@ -475,6 +475,7 @@ if SERVER then
 
 		if world then
 
+			-- TODO(later): maybe determine brush shape here and store it
 			swep:RemoveWorld( net.ReadVector(), snatchobj )
 
 		elseif swep:IsAcceptingProps() then

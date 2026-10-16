@@ -83,6 +83,7 @@ function GetPlayerPropCounts(ply, recentonly)
 end
 
 -- Increment the global count of a specific prop
+-- TODO(fasteroid): check if prop is external here, if it is, require its map for the rest of the run
 function AddProp(ply, model, worth, type)
 	if not model or #model == 0 or not IsValid(ply) then return nil end
 	local id = ply:SteamID64() or "0"
