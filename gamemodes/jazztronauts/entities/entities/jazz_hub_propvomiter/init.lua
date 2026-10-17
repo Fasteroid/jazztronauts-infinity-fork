@@ -14,7 +14,7 @@ ENT.DisableDuplicator = true
 ENT.VomitMusicFile = Sound("jazztronauts/music/trash_chute_music_loop.wav")
 ENT.VomitFinishFile = Sound("jazztronauts/music/trash_chute_music_stop.wav")
 ENT.VomitEmptyFile = Sound("jazztronauts/music/trash_chute_music_empty.wav")
-ENT.VomitSpeed = 2 -- Props per vomit
+ENT.VomitSpeed = 4 -- Props per vomit
 ENT.StartDelay = 0 -- Delay before anything at all happens
 ENT.MusicDelay = 3.5 -- Delay to let the music play before props begin to fall
 ENT.ConstipateDelay = 10.5 -- Delay when the tube is constipated
@@ -261,12 +261,12 @@ function ENT:Decrement(idx)
 end
 
 function ENT:SpawnRandomGibs(pos, ang)
-	local e2 = mapgen.SpawnHubProp(randomGibProps[math.random(1, #randomGibProps)],
-		pos, ang)
-	e2:GetPhysicsObject():SetVelocity(self.VomitVelocity)
-	e2:PrecacheGibs()
-	e2:GibBreakClient(self.VomitVelocity)
-	e2:Remove()
+	-- local e2 = mapgen.SpawnHubProp(randomGibProps[math.random(1, #randomGibProps)],
+	-- 	pos, ang)
+	-- e2:GetPhysicsObject():SetVelocity(self.VomitVelocity)
+	-- e2:PrecacheGibs()
+	-- e2:GibBreakClient(self.VomitVelocity)
+	-- e2:Remove()
 end
 
 function ENT:SpawnPropEffect(propinfo, pos)
