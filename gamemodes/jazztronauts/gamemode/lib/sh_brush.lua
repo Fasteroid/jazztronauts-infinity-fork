@@ -129,6 +129,7 @@ function meta:CreateFromAABB(min, max)
 
 end
 
+-- BOOKMARK(fasteroid)
 function meta:CreateWindings()
 
 	for i, side in pairs(self.sides) do
@@ -281,6 +282,31 @@ function meta:Render(...)
 	for _, side in pairs(self.sides) do
 		side:Render(...)
 	end
+
+end
+
+function meta:GetGeometry()
+
+	local geo = {
+		center 	= self.center,
+		max 	= self.max,
+		min 	= self.min,
+
+		sides	= {}
+	}
+
+	for k, side in ipairs(self.sides) do
+		geo.sides[k] = {
+			bevel = side.bevel,
+			plane = {
+				dist	= side.plane.dist,
+				normal 	= side.plane.normal
+			},
+			texinfo 	= side.texinfo
+		}
+	end
+
+	return geo
 
 end
 
