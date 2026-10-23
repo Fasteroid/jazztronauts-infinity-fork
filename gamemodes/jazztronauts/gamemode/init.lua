@@ -347,6 +347,9 @@ function GM:CollectBrush(brush, players)
 			if not IsValid(ply) then continue end
 
 			local newCount = snatch.AddProp(ply, material, worth, "brush")
+
+			snatch.AddBrush(ply, brush, worth)
+
 			propfeed.notify_brush( material, ply, worth )
 			--propfeed.notify( prop, ply, newCount, worth)
 		end

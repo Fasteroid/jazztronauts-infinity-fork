@@ -193,6 +193,7 @@ if CLIENT then
 			if not side.winding or not side.texinfo then continue end
 			side.winding:Move( to_center )
 
+			-- BOOKMARK(fasteroid)
 			local texinfo = side.texinfo
 			local texdata = texinfo.texdata
 			local material = matOverride or Material( texdata.material )

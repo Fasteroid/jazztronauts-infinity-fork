@@ -8,6 +8,7 @@ end
 
 module( "snatch", package.seeall )
 
+-- BOOKMARK(fasteroid)
 local debug_resnatch = false
 
 removed_brushes = removed_brushes or {}
@@ -404,6 +405,7 @@ function meta:RunDisplacement(disp_id)
 	end
 end
 
+-- CLIENT
 function meta:RunWorld( brush_id )
 
 	if map:IsLoading() then
@@ -447,6 +449,7 @@ function meta:RunWorld( brush_id )
 		//print( texdata.material )
 
 		if self.mode then
+			-- BOOKMARK(fasteroid)
 			side.winding:CreateMesh( material, texinfo.textureVecs, texinfo.lightmapVecs, texdata.width, texdata.height, -to_center )
 		end
 	end

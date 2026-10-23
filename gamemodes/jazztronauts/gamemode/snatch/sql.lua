@@ -3,14 +3,24 @@ module( "snatch", package.seeall )
 -- Per-player prop stealing data
 jsql.Register("jazz_propdata",
 [[
-	steamid BIGINT NOT NULL,
-	mapname VARCHAR(64) NOT NULL,
-	propname VARCHAR(128) NOT NULL,
-	type VARCHAR(16) NOT NULL,
-	total INT UNSIGNED NOT NULL DEFAULT 1,
-	recent INT UNSIGNED NOT NULL DEFAULT 1,
-	worth INT UNSIGNED NOT NULL DEFAULT 0,
+	steamid		BIGINT			NOT NULL,
+	mapname		VARCHAR(64)		NOT NULL,
+	propname	VARCHAR(128)	NOT NULL,
+	type		VARCHAR(16)		NOT NULL,
+	total		INT UNSIGNED	NOT NULL 	DEFAULT 1,
+	recent		INT UNSIGNED	NOT NULL 	DEFAULT 1,
+	worth		INT UNSIGNED	NOT NULL 	DEFAULT 0,
 	PRIMARY KEY(steamid, mapname, propname, type)
+]])
+
+-- ...And the same for brushes, except this is ephemeral and gets cleared every poopchute call
+jsql.Register("jazz_brushdata",
+[[
+	id			INTEGER 		PRIMARY KEY 	AUTOINCREMENT,
+	steamid		BIGINT			NOT NULL,
+	mapname		VARCHAR(64)		NOT NULL,
+	bin			BLOB			NOT NULL,
+	worth		INT UNSIGNED	NOT NULL		DEFAULT 0
 ]])
 
 local Query = jsql.Query
@@ -82,6 +92,8 @@ function GetPlayerPropCounts(ply, recentonly)
 	return {}
 end
 
+
+
 -- Increment the global count of a specific prop
 -- TODO(fasteroid): check if prop is external here, if it is, require its map for the rest of the run
 function AddProp(ply, model, worth, type)
@@ -126,4 +138,21 @@ function ClearPlayerRecentProps(ply)
 	local altr = "UPDATE jazz_propdata SET recent = 0 "
 		.. string.format("WHERE steamid='%s'", id)
 	return Query(altr) != false
+end
+
+function AddBrush(ply, brush, worth)
+	if not brush or not IsValid(ply) then return nil end
+	local steamid = ply:SteamID64() or "0"
+	local map = game.GetMap()
+
+	jsql.QueryTyped(
+		"jazz_brushdata",
+
+		"INSERT INTO jazz_brushdata ( steamid, mapname, bin, worth ) VALUES ( ?, ?, ?, ? )",
+
+		steamid,
+		map,
+		util.Compress( util.TableToJSON( brush:GetGeometry() ) ),
+		worth
+	)
 end

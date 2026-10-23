@@ -73,3 +73,24 @@ function Query(tblName, cmd)
 		return res
 	end
 end
+
+function QueryTyped(tblName, cmd, ...)
+	if cmd == nil then
+		cmd = tblName
+		ensureTables()
+	else
+		ensureTable(tblName)
+	end
+
+	if cmd then
+		local res = sql.QueryTyped(cmd, ...)
+
+		if res == false then
+			print("QUERY FAILED: ")
+			print(cmd)
+			print(sql.LastError())
+		end
+
+		return res
+	end
+end
