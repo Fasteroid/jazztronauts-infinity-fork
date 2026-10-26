@@ -145,7 +145,7 @@ function AddBrush(ply, brush, worth)
 	local steamid = ply:SteamID64() or "0"
 	local map = game.GetMap()
 
-	jsql.QueryTyped(
+	return jsql.QueryTyped(
 		"jazz_brushdata",
 
 		"INSERT INTO jazz_brushdata ( steamid, mapname, bin, worth ) VALUES ( ?, ?, ?, ? )",
@@ -154,5 +154,29 @@ function AddBrush(ply, brush, worth)
 		map,
 		util.Compress( util.TableToJSON( brush:GetGeometry() ) ),
 		worth
+	)
+end
+
+function GetCompressedBrushes(ply)
+	if not IsValid(ply) then return nil end
+	local steamid = ply:SteamID64() or "0"
+
+	return jsql.QueryTyped(
+		"jazz_brushdata",
+
+		"SELECT * FROM jazz_brushdata WHERE steamid = ?",
+		steamid
+	)
+end
+
+function ClearBrushes(ply)
+	if not IsValid(ply) then return nil end
+	local steamid = ply:SteamID64() or "0"
+
+	return jsql.QueryTyped(
+		"jazz_brushdata",
+
+		"DELETE * FROM jazz_brushdata WHERE steamid = ?",
+		steamid
 	)
 end

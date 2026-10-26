@@ -7,7 +7,7 @@ ENT.VomitVelocity = Vector(0, 0, -200)
 ENT.MaxPipeSize = 50
 ENT.ConstipateOdds = 50 -- The odds to do the constipated thing (0 is always, 50 is 1/50)
 ENT.ConstipateCount = 100 -- How many props to spawn at once
-ENT.ConstipateMinProps = 20 -- Minimum number of props required to roll the dice for constipation
+ENT.ConstipateMinProps = math.huge -- Minimum number of props required to roll the dice for constipation
 
 ENT.Type = "point"
 ENT.DisableDuplicator = true
@@ -153,11 +153,12 @@ function ENT:VomitNewProps(ply)
 
 	self.CurrentUser = ply -- TODO: Store steamid, not player reference
 
-	local counts = snatch.GetPlayerPropCounts(ply, true)
+	-- Store original use counts
+	self.SpawnQueue = snatch.GetPlayerPropCounts(ply, true)
 	snatch.ClearPlayerRecentProps(ply)
 
-	-- Store original use counts
-	self.SpawnQueue = counts
+	-- do brushes
+	self.BrushQueue = snatch.GetCompressedBrushes(ply)
 
 	-- Store the index on each keyvalue pair to make it easier to lookup later
 	self.TotalCount = 0
@@ -181,7 +182,7 @@ function ENT:VomitNewProps(ply)
 		print("LOAD TOOK: " .. loadTime .. " seconds!")
 
 		-- Random chance for the pipe to be constipated
-		local empty = next(self.SpawnQueue) == nil
+		local empty = ( next(self.SpawnQueue) == nil ) and ( next(self.BrushQueue) == nil )
 		self.Constipated = not empty
 			and self.TotalCount > self.ConstipateMinProps
 			and math.random(0, self.ConstipateOdds) == 0
