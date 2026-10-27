@@ -47,6 +47,20 @@ meta.__index = meta
 function GetBrushMetatable() return meta end
 function Brush() return setmetatable({}, meta):Init() end
 
+function Hydrate(protobrush)
+	setmetatable(protobrush, GetBrushMetatable())
+
+	local tmeta = bsp3.GetTexMatrixMetaTable()
+	local smeta = GetSideMetatable()
+
+	for _, side in ipairs(protobrush.sides) do
+		setmetatable(side, smeta)
+
+		setmetatable(side.texinfo.textureVecs, tmeta)
+		setmetatable(side.texinfo.lightmapVecs, tmeta)
+	end
+end
+
 function meta:Init()
 
 	self.sides = {}
@@ -308,6 +322,32 @@ function meta:GetGeometry()
 
 	return geo
 
+end
+
+function meta:PrepareMesh(mode)
+	print("prep mesh")
+
+	self:CreateWindings()
+	self.center = (self.min + self.max) / 2
+
+	local to_center = -self.center
+
+	//print("TRANSLATE: " .. tostring( to_center ) )
+
+	for _, side in pairs( self.sides ) do
+		print(side.winding, side.texinfo)
+		if not side.winding or not side.texinfo then continue end
+		side.winding:Move( to_center )
+
+		local texinfo = side.texinfo
+		local texdata = texinfo.texdata
+		local material = Material( texdata.material )
+
+		//print( texdata.material )
+		if( mode ) then
+			side.winding:CreateMesh( material, texinfo.textureVecs, texinfo.lightmapVecs, texdata.width, texdata.height, -to_center )
+		end
+	end
 end
 
 --[[local testBrush = Brush():CreateFromAABB( Vector(-100,-100,-100), Vector(100,100,100) )

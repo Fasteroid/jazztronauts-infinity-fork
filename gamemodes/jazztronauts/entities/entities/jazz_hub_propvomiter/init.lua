@@ -1,6 +1,7 @@
 AddCSLuaFile("cl_init.lua")
 
 util.AddNetworkString("jazz_propvom_effect")
+util.AddNetworkString("jazz_brushvom_effect")
 util.AddNetworkString("jazz_propvom_propsavailable")
 
 ENT.VomitVelocity = Vector(0, 0, -200)
@@ -104,7 +105,7 @@ end
 function ENT:VomitMultiple(count)
 
 	for i=1, count do
-		if not self:VomitProp() then
+		if not ( self:VomitProp() or self:VomitBrush() ) then
 			self:StopVomit()
 			break
 		end
@@ -162,7 +163,7 @@ function ENT:VomitNewProps(ply)
 
 	-- Store the index on each keyvalue pair to make it easier to lookup later
 	self.TotalCount = 0
-	for k, v in pairs(self.SpawnQueue) do
+	for k, v in pairs(self.SpawnQueue) do -- TODO(fasteroid): why not ipairs here?
 		v.Index = k
 		self.TotalCount = self.TotalCount + v.recent
 	end
@@ -247,7 +248,7 @@ function ENT:DoConstipatedEffects()
 	end )
 end
 
-function ENT:Decrement(idx)
+function ENT:Decrement(idx) -- TODO(fasteroid): this seems horribly overcomplicated...
 	if not self.SpawnQueue or not self.SpawnQueue[idx] then return end
 
 	-- Decrement the count by one
@@ -281,6 +282,17 @@ function ENT:SpawnPropEffect(propinfo, pos)
 	net.Send(filter)
 end
 
+function ENT:SpawnBrushEffect(brushinfo, pos)
+	local filter = RecipientFilter()
+	filter:AddPVS(self:GetPos())
+
+	net.Start("jazz_brushvom_effect")
+		net.WriteVector(pos)
+		net.WriteUInt(#brushinfo.bin, 16)
+		net.WriteData(brushinfo.bin)
+	net.Send(filter)
+end
+
 function ENT:ShouldToy(ent)
 	return ent:BoundingRadius() > self.MaxPipeSize or util.IsValidRagdoll(ent:GetModel())
 end
@@ -289,7 +301,7 @@ local lastPropName = nil
 function ENT:VomitProp()
 	if not self.SpawnQueue then return false end
 
-	local prop = table.Random(self.SpawnQueue)
+	local prop = table.Random(self.SpawnQueue) -- TODO(fasteroid): don't use this horrid garry function!!
 	if not prop then return false end
 
 	if not IsValid(self.CurrentUser) then return false end
@@ -314,6 +326,17 @@ function ENT:VomitProp()
 
 	-- Decrement
 	self:Decrement(prop.Index)
+
+	return true
+end
+
+function ENT:VomitBrush()
+	local brushinfo = table.remove( self.BrushQueue )
+	if not brushinfo then return false end
+
+	local pos = self:GetPos() + self:GetAngles():Up() * 100
+
+	self:SpawnBrushEffect(brushinfo, pos)
 
 	return true
 end

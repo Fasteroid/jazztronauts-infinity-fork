@@ -575,6 +575,9 @@ function meta:EmitMesh(texmatrix, lmmatrix, width, height, offset, meshVerts )
 
 	local function emitPointVert(p, normal, verts)
 		local u,v = 0,0
+
+		PrintTable(texmatrix)
+
 		if texmatrix ~= nil then
 			u,v = texmatrix:GetUV(p + offset)
 			u = u / width

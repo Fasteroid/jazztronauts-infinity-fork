@@ -52,6 +52,22 @@ local function tooBig(ent)
 	return size.x > PipeRadius || size.y > PipeRadius
 end
 
+local function yeet(entObj)
+	local ent = entObj.Instance
+
+	ent:SetNoDraw(false)
+	ent:DrawShadow(true)
+
+	ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+	ent:GetPhysicsObject():SetMass(500)
+	ent:GetPhysicsObject():Wake()
+	ent:GetPhysicsObject():SetVelocity(Vector(0, 0, math.Rand(-1000, -100)))
+	ent:GetPhysicsObject():AddAngleVelocity(VectorRand() * 1000)
+
+	ent.RemoveAt = UnPredictedCurTime() + Lifetime
+	table.insert(JazzVomitProps, entObj)
+end
+
 local idx = 0
 local function AddVomitProp(model, pos)
 	idx = idx + 1
@@ -83,34 +99,23 @@ local function AddVomitProp(model, pos)
 		ent:SetPos(pos)
 	end
 
-	ent:SetNoDraw(false)
-	ent:DrawShadow(true)
-
-	ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-	ent:GetPhysicsObject():SetMass(500)
-	ent:GetPhysicsObject():Wake()
-	ent:GetPhysicsObject():SetVelocity(Vector(0, 0, math.Rand(-1000, -100)))
-	ent:GetPhysicsObject():AddAngleVelocity(VectorRand() * 1000)
-
-	ent.RemoveAt = UnPredictedCurTime() + Lifetime
-	table.insert(JazzVomitProps, entObj)
-	//SafeRemoveEntityDelayed(ent, 10)
+	yeet(entObj)
 
 	return ent
 end
 
-local brushModels = {
-	--"models/sunabouzu/worldgib01.mdl",
-	"models/sunabouzu/worldgib02.mdl",
-	"models/sunabouzu/worldgib03.mdl"
-}
-local function AddVomitBrush(material, pos)
-	local model = table.Random(brushModels)
-	local ent = AddVomitProp(model, pos)
-	local matname, mat = brush.GetBrushMaterial(material)
 
-	ent:SetMaterial(matname)
-	return ent
+local function AddVomitBrush(brush, pos)
+	brush:PrepareMesh(1)
+	local entObj = snatch.SpawnBrushCSEnt(brush, pos)
+
+	local ent = entObj.Instance
+
+	ent:PhysicsInitSphere(32)
+
+	yeet(entObj)
+
+	return entObj
 end
 
 hook.Add("Think", "TickVomitProps", TickVomitProps)
@@ -120,11 +125,18 @@ net.Receive("jazz_propvom_effect", function(len, ply)
 	local model = net.ReadString()
 	local type = net.ReadString()
 
-	if type == "brush" then
-		AddVomitBrush(model, pos)
-	else
+	if type ~= "brush" then
 		AddVomitProp(model, pos)
 	end
+end )
+
+net.Receive("jazz_brushvom_effect", function(len, ply)
+	local pos        = net.ReadVector()
+	local protobrush = util.JSONToTable( util.Decompress( net.ReadData( net.ReadUInt(16) ) ) )
+
+	brush.Hydrate(protobrush)
+
+	AddVomitBrush(protobrush, pos)
 end )
 
 

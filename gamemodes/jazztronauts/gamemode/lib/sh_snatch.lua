@@ -429,30 +429,7 @@ function meta:RunWorld( brush_id )
 		side.plane.dist = side.plane.dist + extrude
 	end
 
-	local convex = {}
-
-	brush:CreateWindings()
-	brush.center = (brush.min + brush.max) / 2
-
-	local to_center = -brush.center
-
-	//print("TRANSLATE: " .. tostring( to_center ) )
-
-	for _, side in pairs( brush.sides ) do
-		if not side.winding or not side.texinfo then continue end
-		side.winding:Move( to_center )
-
-		local texinfo = side.texinfo
-		local texdata = texinfo.texdata
-		local material = Material( texdata.material )
-
-		//print( texdata.material )
-
-		if self.mode then
-			-- BOOKMARK(fasteroid)
-			side.winding:CreateMesh( material, texinfo.textureVecs, texinfo.lightmapVecs, texdata.width, texdata.height, -to_center )
-		end
-	end
+	brush:PrepareMesh(self.mode)
 
 	table.insert( removed_brushes, brush )
 
@@ -461,42 +438,52 @@ function meta:RunWorld( brush_id )
 
 	//print("WINDINGS READY, CREATE BRUSH PROXY")
 	if self.mode then
-		local entity = ManagedCSEnt( "brushproxy_" .. brush_id, "models/hunter/blocks/cube025x025x025.mdl", false )
-		if not IsValid(entity) then return end
-		local actual = entity:Get()
+		local ent = SpawnBrushCSEnt(brush, brush.center - EyeAngles():Forward() * 5, brush_id)
 
-		if IsValid(actual) then
-			actual.mesh = test_mesh
-			actual:SetPos( brush.center - EyeAngles():Forward() * 5 )
-			actual:SetRenderBounds( brush.min - brush.center, brush.max - brush.center )
-			actual:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
-
-			actual.RenderOverride = function( self )
-
-				if self.hide then return end
-
-				//actual:DrawModel()
-
-				local mtx = Matrix()
-				mtx:SetTranslation( actual:GetPos() )
-				mtx:SetAngles( actual:GetAngles() )
-				mtx:SetScale(vec_one * (actual:GetModelScale() or 1))
-
-				cam.PushModelMatrix( mtx )
-				brush:Render()
-				cam.PopModelMatrix()
-			end
-
+		if ent and IsValid(ent.Instance) then
 			self.handle = entity
-			self.fake = actual
-			self.real = actual
-
-			//print("PROXY READY, SNATCH IT")
+			self.fake = ent.Instance
+			self.real = ent.Instance
 
 			hook.Call( "HandlePropSnatch", GAMEMODE, self )
 		end
 	end
 
+end
+
+local brush_gib_idx = 0
+function SpawnBrushCSEnt(brush, pos, id)
+
+	brush_gib_idx = brush_gib_idx + 1
+	id = id or brush_gib_idx
+
+	local entObj = ManagedCSEnt( "brushproxy_" .. id, "models/hunter/blocks/cube025x025x025.mdl", false )
+	if not IsValid(entObj) then return end
+	local actual = entObj.Instance
+
+	if IsValid(actual) then
+		actual:SetPos( pos )
+		actual:SetRenderBounds( brush.min - brush.center, brush.max - brush.center )
+		actual:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
+
+		actual.RenderOverride = function( self )
+
+			if self.hide then return end
+
+			//actual:DrawModel()
+
+			local mtx = Matrix()
+			mtx:SetTranslation( actual:GetPos() )
+			mtx:SetAngles( actual:GetAngles() )
+			mtx:SetScale(vec_one * (actual:GetModelScale() or 1))
+
+			cam.PushModelMatrix( mtx )
+			brush:Render()
+			cam.PopModelMatrix()
+		end
+	end
+
+	return entObj
 end
 
 function meta:StartProp( prop, owner, kill, delay )

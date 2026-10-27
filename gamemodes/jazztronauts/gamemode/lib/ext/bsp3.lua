@@ -656,6 +656,9 @@ lump_handlers[LUMP_NODES] = lump_array( function()
 end, 32 )
 
 local tmeta = {}
+function GetTexMatrixMetaTable()
+    return tmeta
+end
 
 local __dot = FindMetaTable("Vector").Dot
 function tmeta:GetUV(p)
