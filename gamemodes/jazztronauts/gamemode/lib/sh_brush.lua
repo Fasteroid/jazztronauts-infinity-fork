@@ -325,7 +325,6 @@ function meta:GetGeometry()
 end
 
 function meta:PrepareMesh(mode)
-	print("prep mesh")
 
 	self:CreateWindings()
 	self.center = (self.min + self.max) / 2
@@ -335,7 +334,6 @@ function meta:PrepareMesh(mode)
 	//print("TRANSLATE: " .. tostring( to_center ) )
 
 	for _, side in pairs( self.sides ) do
-		print(side.winding, side.texinfo)
 		if not side.winding or not side.texinfo then continue end
 		side.winding:Move( to_center )
 
