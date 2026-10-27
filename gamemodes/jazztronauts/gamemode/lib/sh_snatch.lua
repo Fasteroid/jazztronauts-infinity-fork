@@ -421,14 +421,7 @@ function meta:RunWorld( brush_id )
 		ErrorNoHalt( "Brush not found: " .. tostring( brush_id ))
 		return
 	end
-
-	-- extrude out from sides (TWEAK!!)
-	local extrude = -1
-	for k, side in pairs( brush.sides ) do
-		//if emptySide(side) then continue end
-		side.plane.dist = side.plane.dist + extrude
-	end
-
+	
 	brush:PrepareMesh(self.mode)
 
 	table.insert( removed_brushes, brush )

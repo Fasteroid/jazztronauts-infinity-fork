@@ -326,6 +326,13 @@ end
 
 function meta:PrepareMesh(mode)
 
+	-- extrude out from sides (TWEAK!!)
+	local extrude = -1
+	for k, side in pairs( self.sides ) do
+		//if emptySide(side) then continue end
+		side.plane.dist = side.plane.dist + extrude
+	end
+
 	self:CreateWindings()
 	self.center = (self.min + self.max) / 2
 

@@ -24,7 +24,6 @@ local function TickVomitProps()
 		end
 	end
 end
-
 local function getPropSize(ent)
 	local phys = ent:GetPhysicsObject()
 	local min, max = IsValid(phys) and phys:GetAABB()
