@@ -160,6 +160,7 @@ function ENT:VomitNewProps(ply)
 
 	-- do brushes
 	self.BrushQueue = snatch.GetCompressedBrushes(ply)
+	snatch.ClearBrushes(ply)
 
 	-- Store the index on each keyvalue pair to make it easier to lookup later
 	self.TotalCount = 0
