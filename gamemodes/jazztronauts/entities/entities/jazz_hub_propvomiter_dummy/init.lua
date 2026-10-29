@@ -242,7 +242,7 @@ function ENT:VomitNewProps()
 	-- Start the music and away we go
 	self.StartAt = CurTime() + self.MusicDelay + self.StartDelay
 	timer.Simple(self.StartDelay, function()
-		--self:StartMusic(self.VomitMusicFile)
+		self:StartMusic(self.VomitMusicFile)
 		self:SetIsVomiting(true)
 	end )
 

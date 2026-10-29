@@ -347,8 +347,7 @@ function meta:PrepareMesh(mode)
 		local texinfo = side.texinfo
 		local texdata = texinfo.texdata
 		local material = Material( cleanupTexture( texdata.material ) )
-
-		print( material )
+		
 		if( mode ) then
 			side.winding:CreateMesh( material, texinfo.textureVecs, texinfo.lightmapVecs, texdata.width, texdata.height, -to_center )
 		end

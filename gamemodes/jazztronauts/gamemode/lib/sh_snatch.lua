@@ -448,7 +448,7 @@ local brush_gib_idx = 0
 function SpawnBrushCSEnt(brush, pos, id)
 
 	brush_gib_idx = brush_gib_idx + 1
-	id = id or brush_gib_idx
+	id = id or ("_" .. brush_gib_idx)
 
 	local entObj = ManagedCSEnt( "brushproxy_" .. id, "models/hunter/blocks/cube025x025x025.mdl", false )
 	if not IsValid(entObj) then return end

@@ -200,7 +200,7 @@ function ENT:VomitNewProps(ply)
 		local startDelay = self.StartDelay - loadTime
 		self.StartAt = CurTime() + self.MusicDelay + startDelay
 		timer.Simple(startDelay, function()
-			-- self:StartMusic(empty and self.VomitEmptyFile or self.VomitMusicFile)
+			self:StartMusic(empty and self.VomitEmptyFile or self.VomitMusicFile)
 		end )
 	end )
 end

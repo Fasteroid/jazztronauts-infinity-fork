@@ -3,6 +3,7 @@ JazzVomitProps = JazzVomitProps or {}
 local Lifetime = 5
 local FadeBegin = 2
 local PipeRadius = 40
+local PipeHeight = 170
 
 local function TickVomitProps()
 	for i=#JazzVomitProps, 1, -1 do
@@ -29,7 +30,7 @@ local function getPropSize(ent)
 	local min, max = IsValid(phys) and phys:GetAABB()
 
 	if not min or not max then
-		min, max = ent:GetModelBounds()
+		min, max = ent:GetRenderBounds()
 	end
 
 	return max - min
@@ -46,9 +47,10 @@ local function resize(ent)
 end
 
 local function tooBig(ent)
-	local size = getPropSize(ent) * 0.5
+	local size = getPropSize(ent)
+	print(size)
 
-	return size.x > PipeRadius || size.y > PipeRadius
+	return size.x > (PipeRadius * 2) or size.y > (PipeRadius * 2) or size.z > PipeHeight
 end
 
 local function yeet(entObj)
@@ -111,8 +113,10 @@ local function AddVomitBrush(brush, pos)
 	local ent = entObj.Instance
 
 	ent:SetMoveType(MOVETYPE_VPHYSICS)
-	local verts = brush:GetVerts()
-	ent:PhysicsInitConvex(verts)
+
+	if( tooBig(ent) or not ent:PhysicsInitConvex( brush:GetVerts() ) ) then 
+		resize(ent)
+	end
 
 	yeet(entObj)
 
