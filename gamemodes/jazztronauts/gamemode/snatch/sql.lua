@@ -173,10 +173,10 @@ function ClearBrushes(ply)
 	if not IsValid(ply) then return nil end
 	local steamid = ply:SteamID64() or "0"
 
-	-- return jsql.QueryTyped(
-	-- 	"jazz_brushdata",
+	return jsql.QueryTyped(
+		"jazz_brushdata",
 
-	-- 	"DELETE FROM jazz_brushdata WHERE steamid = ?",
-	-- 	steamid
-	-- )
+		"DELETE FROM jazz_brushdata WHERE steamid = ?",
+		steamid
+	)
 end
