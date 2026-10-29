@@ -518,8 +518,6 @@ if CLIENT then
 	lightmaprt:Render(function() render.Clear(12, 12, 12, 255) end )
 end
 
-local PLACEHOLDER_MATER = Material("matsys_regressiontest/background")
-
 function meta:Render(col, depth, offset, wire)
 
 	self.rplane = self.rplane or self:Plane()
@@ -530,7 +528,7 @@ function meta:Render(col, depth, offset, wire)
 		end
 		render.SetLightmapTexture(lightmapTex)
 		render.SetLightingOrigin( self.cache_center )
-		render.SetMaterial(PLACEHOLDER_MATER)
+		render.SetMaterial( self.material )
 
 		--if lightmap ~= nil then render.SetLightmapTexture( lightmap ) end
 		self.mesh:Draw()
@@ -619,7 +617,7 @@ end
 
 local default_mesh_material = Material( "editor/wireframe" )
 function meta:CreateMesh(material, texmatrix, lmmatrix, width, height, offset )
-	self.mesh = ManagedMesh(material )
+	self.mesh = ManagedMesh(material)
 
 	mesh.Begin( self.mesh:Get(), MATERIAL_TRIANGLES, #self.points - 2 )
 		self:EmitMesh( texmatrix, lmmatrix, width, height, offset)

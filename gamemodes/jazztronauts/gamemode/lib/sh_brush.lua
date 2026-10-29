@@ -346,9 +346,9 @@ function meta:PrepareMesh(mode)
 
 		local texinfo = side.texinfo
 		local texdata = texinfo.texdata
-		local material = Material( texdata.material )
+		local material = Material( cleanupTexture( texdata.material ) )
 
-		//print( texdata.material )
+		print( material )
 		if( mode ) then
 			side.winding:CreateMesh( material, texinfo.textureVecs, texinfo.lightmapVecs, texdata.width, texdata.height, -to_center )
 		end
@@ -392,4 +392,37 @@ function GetBrushMaterial(material)
 
 	brushMaterials[material] = propmat
 	return "!" .. matname, propmat
+end
+
+function meta:GetVerts()
+
+	if( self.__verts ) then return self.__verts end
+
+	local dedupe = {}
+	self.__verts = {}
+
+	for _, side in pairs(self.sides) do
+		if not side.winding or not side.winding.points then continue end
+		for _, point in pairs(side.winding.points) do
+			local hash = tostring(point)
+			if not dedupe[hash] then dedupe[hash] = point end
+			self.__verts[#self.__verts + 1] = point
+		end
+	end
+
+	return self.__verts
+
+end
+
+-- DOCS(fasteroid): 
+-- this method is a reimplementation of "cleanupTexture" from the E2 raytracer!
+-- it does the same thing: remove the cursed hardcoded offsets from certain map textures
+function cleanupTexture(Tex)
+    -- check if we even need to do this
+    if Tex:sub(1,3) == "map" then
+        -- capture everything before the third underscore from the end
+        return Tex:match("^(.*)_[^_]*_[^_]*_[^_]*$") or Tex -- _-516_-83_896
+    else
+        return Tex
+    end
 end

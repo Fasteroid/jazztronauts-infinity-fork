@@ -177,29 +177,7 @@ if CLIENT then
 			return
 		end
 
-		-- extrude out from sides (TWEAK!!)
-		extrude = extrude or -1
-		for k, side in pairs( brush.sides ) do
-			side.plane.dist = side.plane.dist + extrude
-		end
-
-		brush:CreateWindings()
-		brush.center = (brush.min + brush.max) / 2
-
-		local to_center = -brush.center
-
-		local verts = {}
-		for _, side in pairs( brush.sides ) do
-			if not side.winding or not side.texinfo then continue end
-			side.winding:Move( to_center )
-
-			-- BOOKMARK(fasteroid)
-			local texinfo = side.texinfo
-			local texdata = texinfo.texdata
-			local material = matOverride or Material( texdata.material )
-
-			side.winding:CreateMesh(material, texinfo.textureVecs, texinfo.lightmapVecs, texdata.width, texdata.height, -to_center )
-		end
+		brush:PrepareMesh()
 
 		-- Also set render bounds to match
 		self:SetRenderBoundsWS(brush.min, brush.max)

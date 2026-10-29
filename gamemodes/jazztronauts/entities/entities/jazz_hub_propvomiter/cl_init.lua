@@ -110,7 +110,9 @@ local function AddVomitBrush(brush, pos)
 
 	local ent = entObj.Instance
 
-	ent:PhysicsInitSphere(32)
+	ent:SetMoveType(MOVETYPE_VPHYSICS)
+	local verts = brush:GetVerts()
+	ent:PhysicsInitConvex(verts)
 
 	yeet(entObj)
 
