@@ -152,7 +152,7 @@ function AddBrush(ply, brush, worth)
 		steamid,
 		map,
 		util.Compress( util.TableToJSON( brush:GetGeometry() ) ),
-		worth
+		math.Round(worth)
 	)
 end
 
