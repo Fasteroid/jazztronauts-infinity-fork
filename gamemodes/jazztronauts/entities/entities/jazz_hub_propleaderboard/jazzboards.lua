@@ -42,7 +42,7 @@ if SERVER then
 		local pid = IsValid(ply) and ply:SteamID64() or nil
 
 		local counts = snatch.GetPropCounts()
-		local tallied = Boards[id].valuefunc(counts)
+		local tallied = Boards[id].valuefunc(counts, snatch.GetCompressedBrushes())
 
 		-- If the leaderboard supports a temporary offset, apply it here
 		if id and offset and tallied[pid] then
@@ -112,19 +112,19 @@ if CLIENT then
 end
 
 
-AddLeaderboard(BOARD_TOTALPROPS, "jazz.leaderboard.totals", function(counts)
+AddLeaderboard(BOARD_TOTALPROPS, "jazz.leaderboard.totals", function(counts, brushes)
 	local all = {}
 
 	for _, v in pairs(counts) do
 		all[v.steamid] = all[v.steamid] or { count = 0 }
-		all[v.steamid].count = all[v.steamid].count + v.total - v.recent
+		all[v.steamid].count = all[v.steamid].count + v.total - v.recent - #brushes
 		all[v.steamid].steamid = v.steamid
 	end
 
 	return all
 end )
 
-AddLeaderboard(BOARD_SESSIONPROPS, "jazz.leaderboard.session", function(counts)
+AddLeaderboard(BOARD_SESSIONPROPS, "jazz.leaderboard.session", function(counts, brushes)
 	local all = {}
 
 	for k, v in pairs(SessionProps) do
@@ -134,12 +134,12 @@ AddLeaderboard(BOARD_SESSIONPROPS, "jazz.leaderboard.session", function(counts)
 	return all
 end )
 
-AddLeaderboard(BOARD_RECENTS,  "jazz.leaderboard.patient", function(counts)
+AddLeaderboard(BOARD_RECENTS,  "jazz.leaderboard.patient", function(counts, brushes)
 	local all = {}
 
 	for _, v in pairs(counts) do
 		all[v.steamid] = all[v.steamid] or { count = 0 }
-		all[v.steamid].count = all[v.steamid].count + v.recent
+		all[v.steamid].count = all[v.steamid].count + v.recent + #brushes
 		all[v.steamid].steamid = v.steamid
 	end
 
