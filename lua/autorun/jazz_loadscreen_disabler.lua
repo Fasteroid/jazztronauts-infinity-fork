@@ -6,10 +6,7 @@ local jazz_urls = { "host.foohy.net", "foohy.github.io" }
 local WORKSHOP_CACHE_PATH = "jazztronauts/cache"
 
 local function ClearCache()
-	local files = file.Find(WORKSHOP_CACHE_PATH .. "/*", "DATA")
-	for _, v in pairs(files) do
-		file.Delete(WORKSHOP_CACHE_PATH .. "/" .. v)
-	end
+    workshop.ClearCache()
 end
 
 local function MatchesAny(str, arr)
