@@ -289,3 +289,28 @@ function LoadHubPropData()
 
 	return res
 end
+
+
+function GetRecentSnatchOrigins()
+	local res = Query([[
+		SELECT DISTINCT
+			maps.filename, maps.wsid
+		FROM 
+			jazz_mapgen AS maps
+			INNER JOIN jazz_propdata props ON props.mapname = maps.filename
+		WHERE
+			props.recent > 0
+
+		UNION
+
+		SELECT DISTINCT
+			maps.filename, maps.wsid
+		FROM 
+			jazz_mapgen AS maps
+			INNER JOIN jazz_brushdata brushes ON brushes.mapname = maps.filename
+	]])
+
+	if not res then return {} end
+
+	return res
+end
