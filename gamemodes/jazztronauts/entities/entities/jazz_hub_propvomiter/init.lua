@@ -164,10 +164,13 @@ function ENT:VomitNewProps(ply)
 
 	-- Store the index on each keyvalue pair to make it easier to lookup later
 	self.TotalCount = 0
-	for k, v in pairs(self.SpawnQueue) do -- TODO(fasteroid): why not ipairs here?
+	for k, v in ipairs(self.SpawnQueue) do
 		v.Index = k
 		self.TotalCount = self.TotalCount + v.recent
 	end
+
+	-- Add brushes since they aren't part of the main stream anymore
+	self.TotalCount = self.TotalCount + #self.BrushQueue
 
 	-- Add this as a 'session' prop for leaderboards
 	if IsValid(self.CurrentUser) then
@@ -337,6 +340,7 @@ function ENT:VomitBrush()
 
 	local pos = self:GetPos() + self:GetAngles():Up() * 100
 
+	self.CurrentUser:ChangeNotes(brushinfo.worth)
 	self:SpawnBrushEffect(brushinfo, pos)
 
 	return true

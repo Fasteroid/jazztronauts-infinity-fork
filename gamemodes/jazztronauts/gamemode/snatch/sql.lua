@@ -75,21 +75,20 @@ function GetPlayerPropCounts(ply, recentonly)
 
 	local res = Query(altr)
 
-	if type(res) == "table" then
-		for i=1, #res do
-			-- Convert to number
-			res[i].total = tonumber(res[i].total)
-			res[i].recent = tonumber(res[i].recent)
-			res[i].worth = tonumber(res[i].worth)
+	if not res then return {} end
 
-			-- Allow key lookup
-			--res[res[i].propname] = res[i]
-			--res[i] = nil
-		end
-		return res
+	for i=1, #res do
+		-- Convert to number
+		res[i].total  = tonumber(res[i].total)
+		res[i].recent = tonumber(res[i].recent)
+		res[i].worth  = tonumber(res[i].worth)
+
+		-- Allow key lookup
+		--res[res[i].propname] = res[i]
+		--res[i] = nil
 	end
+	return res
 
-	return {}
 end
 
 

@@ -346,11 +346,14 @@ function GM:CollectBrush(brush, players)
 		for _, ply in pairs(players) do
 			if not IsValid(ply) then continue end
 
-			local newCount = snatch.AddProp(ply, material, worth, "brush")
+			-- NOTE(fasteroid): brushes are now in their own stream; don't track in the props table anymore
+			-- local newCount = snatch.AddProp(ply, material, worth, "brush")
 
 			snatch.AddBrush(ply, brush, worth)
 
+			-- TODO(fasteroid): we want the brush geo to appear here too!
 			propfeed.notify_brush( material, ply, worth )
+
 			--propfeed.notify( prop, ply, newCount, worth)
 		end
 	end
